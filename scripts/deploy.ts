@@ -14,6 +14,19 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     console.log(wallet);
     const deployer = new Deployer(hre, wallet);
 
+    //0x3BfD77453A8B3B09c6098055d21F4FEdF80700Fd
+    // const usdcArtifact = await deployer.loadArtifact("TestToken");
+    // const usdc = await deployer.deploy(usdcArtifact);
+    // console.log(`usdc address: ${usdc.address}`);
+
+    // // 0xCB437707141e00b385C1C9D086c4ae01195DE8
+    // const evaluationAgentNFT = await deployer.loadArtifact("EvaluationAgentNFT");
+    // const evaluationAgentNFTContract = await deployer.deploy(evaluationAgentNFT);
+    // console.log(`evaluationAgentNFT address: ${evaluationAgentNFTContract.address}`);
+
+
+
+
     // //BaseCreditPoolStorage DONE 
     // const BaseCreditPoolStorageArtifact = await deployer.loadArtifact('BaseCreditPoolStorage');
     // const baseCreditPoolStorage = await deployer.deploy(BaseCreditPoolStorageArtifact)
@@ -35,9 +48,9 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     // console.log(`basePoolConfig address: ${basePoolConfig.address}`);
 
     // BasePool 
-    const BasePoolArtifact = await deployer.loadArtifact('BasePool');
-    const basePool = await deployer.deploy(BasePoolArtifact);
-    console.log(`basePool address: ${basePool.address}`);
+    // const BasePoolArtifact = await deployer.loadArtifact('BasePool');
+    // const basePool = await deployer.deploy(BasePoolArtifact);
+    // console.log(`basePool address: ${basePool.address}`);
 
     //Errors 0x8aFAF99a942e6EE44bC45cf41a19D0888d6c7ca9
     // const ErrorsArtifact = await deployer.loadArtifact('Errors');
@@ -47,7 +60,10 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     //HumaConfig 0xC56c8545e3f6393bEec41AFFA42f73D4e9ac0CA6
     // const protocolFee = 100;
     // const period = 60;
-    // const HumaConfigArtifact = await deployer.loadArtifact('HumaConfig');
+
+    const HumaConfigArtifact = await deployer.loadArtifact('HumaConfig');
+    console.log(HumaConfigArtifact);
+
     // const humaConfig = await deployer.deploy(HumaConfigArtifact);
     // console.log(`humaConfig address: ${humaConfig.address}`);
 
