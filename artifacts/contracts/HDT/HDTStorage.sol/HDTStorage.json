@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "HDTStorage",
+  "sourceName": "contracts/HDT/HDTStorage.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122000763f1ce110ea765c2036a68cccabf776a002523e039c7a9390deb059cbce5864736f6c63430008110033",
+  "deployedBytecode": "0x6080604052600080fdfea264697066735822122000763f1ce110ea765c2036a68cccabf776a002523e039c7a9390deb059cbce5864736f6c63430008110033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
