@@ -1,86 +1,86 @@
-import { utils, Wallet } from 'zksync-web3';
+import { utils, Wallet, Provider} from 'zksync-web3';
 import * as ethers from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
 import dotenv from 'dotenv';
 import { SigningKey } from 'ethers/lib/utils';
+import {BigNumber} from "ethers";
 dotenv.config();
+import { Web3Provider } from "zksync-web3";
 
+
+const HUMA_OWNER_MULTI_SIG = '0xA071F1BC494507aeF4bc5038B8922641c320d486';
+const POOL_OWNER_MULTI_SIG = '0x980b09F0CB1a945d29fd45E42cBC046F59cAa7c9';
+const dpl = '0x980b09F0CB1a945d29fd45E42cBC046F59cAa7c9';
 
 export default async function main(hre: HardhatRuntimeEnvironment) {
 
     const privateKey = process.env.PRIVATE_KEY ?? 'null';
-    const wallet = new Wallet(privateKey);
+    const zkync_goerli_url = process.env.ZK_GOERLI_URL ?? 'null';
+    const wallet = new Wallet(privateKey); 
     console.log(wallet);
+    const provider = new Provider("https://zksync2-testnet.zksync.dev");
+    const walletL2 = wallet.connect(provider);
     const deployer = new Deployer(hre, wallet);
 
-    //0x3BfD77453A8B3B09c6098055d21F4FEdF80700Fd
-    // const usdcArtifact = await deployer.loadArtifact("TestToken");
-    // const usdc = await deployer.deploy(usdcArtifact);
-    // console.log(`usdc address: ${usdc.address}`);
 
-    // // 0xCB437707141e00b385C1C9D086c4ae01195DE8
-    // const evaluationAgentNFT = await deployer.loadArtifact("EvaluationAgentNFT");
-    // const evaluationAgentNFTContract = await deployer.deploy(evaluationAgentNFT);
-    // console.log(`evaluationAgentNFT address: ${evaluationAgentNFTContract.address}`);
+    const usdcArtifact = await deployer.loadArtifact("TestToken");
+    const usdc = await deployer.deploy(usdcArtifact);
+    console.log(`usdc address: ${usdc.address}`);
 
+    const EANFT = await deployer.loadArtifact("EvaluationAgentNFT");
+    const EANFTContract = await deployer.deploy(EANFT, []);
+    console.log(`evaluationAgentNFT address: ${EANFTContract.address}`)
+    
+    // TO REDO after compiing contract
+    // const RNNFT = await deployer.loadArtifact("InvoiceNFT");
+    // const RNNFTContract = await deployer.deploy(RNNFT, [usdc.address]);
+    // console.log(`invoiceNFT address: ${RNNFTContract.address}`);
 
+    const HumaConfig = await deployer.loadArtifact("HumaConfig");
+    const HumaConfigContract = await deployer.deploy(HumaConfig);
+    console.log(`HumaConfig address: ${HumaConfigContract.address}`);
 
+    const humaConfigTimeLock = await deployer.loadArtifact("TimelockController");
+    const humaConfigTimeLockContract = await deployer.deploy(humaConfigTimeLock, [0, [HUMA_OWNER_MULTI_SIG], [dpl], wallet.address]);
+    console.log(`humaConfigTimeLock address: ${humaConfigTimeLockContract.address}`);
 
-    // //BaseCreditPoolStorage DONE 
-    // const BaseCreditPoolStorageArtifact = await deployer.loadArtifact('BaseCreditPoolStorage');
-    // const baseCreditPoolStorage = await deployer.deploy(BaseCreditPoolStorageArtifact)
-    // console.log(`baseCreditPoolStorage address: ${baseCreditPoolStorage.address}`);
+    const BaseCreditPoolTimelock = await deployer.loadArtifact("TimelockController");
+    const BaseCreditPoolTimelockContract = await deployer.deploy(BaseCreditPoolTimelock, [0, [POOL_OWNER_MULTI_SIG], [dpl], wallet.address]);
+    console.log(`BaseCreditPoolTimelock address: ${BaseCreditPoolTimelockContract.address}`);
 
-    //BaseCreditPool  DONE 0x711825ECF0cAE46A4D8dA3c9597e3bAACA6C371d
-    // const BaseCreditPoolArtifact = await deployer.loadArtifact('BaseCreditPool');
-    // const baseCreditPool = await deployer.deploy(BaseCreditPoolArtifact);
-    // console.log(`baseCreditPool address: ${baseCreditPool.address}`);
+    const BaseCreditPoolProxyAdminTimelock = await deployer.loadArtifact("TimelockController");
+    const BaseCreditPoolProxyAdminTimelockContract = await deployer.deploy(BaseCreditPoolProxyAdminTimelock, [0, [POOL_OWNER_MULTI_SIG], [dpl], wallet.address]);
+    console.log(`BaseCreditPoolProxyAdminTimelock address: ${BaseCreditPoolProxyAdminTimelockContract.address}`);
 
-    //BaseFeeManager  DONE 0x4b3Be52DB056a9F5Fc51eAc7bC383Adf3E462524
-    // const BaseFeeManagerArtifact = await deployer.loadArtifact('BaseFeeManager');
-    // const baseFeeManager = await deployer.deploy(BaseFeeManagerArtifact);
-    // console.log(`baseFeeManager address: ${baseFeeManager.address}`);
+    const BaseCreditPoolFeeManager = await deployer.loadArtifact("BaseFeeManager");
+    const BaseCreditPoolFeeManagerContract = await deployer.deploy(BaseCreditPoolFeeManager);
+    console.log(`BaseCreditPoolFeeManager address: ${BaseCreditPoolFeeManagerContract.address}`);
 
-    //BasePoolConfig 0xbe41E893aC26395d2fd8D871EC6020aDfD465bd8 
-    // const BasePoolConfigArtifact = await deployer.loadArtifact('BasePoolConfig');
-    // const basePoolConfig = await deployer.deploy(BasePoolConfigArtifact);
-    // console.log(`basePoolConfig address: ${basePoolConfig.address}`);
+    const BaseCreditHDTImpl = await deployer.loadArtifact("HDT");
+    const BaseCreditHDTImplContract = await deployer.deploy(BaseCreditHDTImpl);
+    console.log(`BaseCreditHDTImpl address: ${BaseCreditHDTImplContract.address}`);
 
-    // BasePool 
-    // const BasePoolArtifact = await deployer.loadArtifact('BasePool');
-    // const basePool = await deployer.deploy(BasePoolArtifact);
-    // console.log(`basePool address: ${basePool.address}`);
+    const BaseCreditHDT = await deployer.loadArtifact("TransparentUpgradeableProxy");
+    const BaseCreditHDTContract = await deployer.deploy(BaseCreditHDT, [BaseCreditHDTImplContract.address, BaseCreditPoolProxyAdminTimelockContract.address, []]);
+    console.log(`BaseCreditHDT address: ${BaseCreditHDTContract.address}`);
 
-    //Errors 0x8aFAF99a942e6EE44bC45cf41a19D0888d6c7ca9
-    // const ErrorsArtifact = await deployer.loadArtifact('Errors');
-    // const errors = await deployer.deploy(ErrorsArtifact);
-    // console.log(`errors address: ${errors.address}`);
+    const BaseCreditPoolConfig = await deployer.loadArtifact("BasePoolConfig");
+    const BaseCreditPoolConfigContract = await deployer.deploy(BaseCreditPoolConfig);
+    console.log(`BaseCreditPoolConfig address: ${BaseCreditPoolConfigContract.address}`);
 
-    //HumaConfig 0xC56c8545e3f6393bEec41AFFA42f73D4e9ac0CA6
-    // const protocolFee = 100;
-    // const period = 60;
-
-    const HumaConfigArtifact = await deployer.loadArtifact('HumaConfig');
-    console.log(HumaConfigArtifact);
-
-    // const humaConfig = await deployer.deploy(HumaConfigArtifact);
-    // console.log(`humaConfig address: ${humaConfig.address}`);
-
-    //ReceivableFactoringPool 0xbA5E1a50ce5dD727c5B5A98C5Dd098A87BC64e8F
-    // const ReceivableFactoringPoolArtifact = await deployer.loadArtifact('ReceivableFactoringPool');
-    // const receivableFactoringPool = await deployer.deploy(ReceivableFactoringPoolArtifact);
-    // console.log(`receivableFactoringPool address: ${receivableFactoringPool.address}`);
+    const BaseCreditPoolImpl = await deployer.loadArtifact("BaseCreditPool");
+    const BaseCreditPoolImplContract = await deployer.deploy(BaseCreditPoolImpl);
+    console.log(`BaseCreditPoolImpl address: ${BaseCreditPoolImplContract.address}`);
 
 
-
-
-
-
-
-
+    const BaseCreditPool = await deployer.loadArtifact("TransparentUpgradeableProxy");
+    const BaseCreditPoolContract = await deployer.deploy(BaseCreditPool, [BaseCreditPoolImplContract.address, BaseCreditPoolProxyAdminTimelockContract.address, []]);
+    console.log(`BaseCreditPool address: ${BaseCreditPoolContract.address}`);
 
   }
+
+    // End of deploying base credit pool
 
 
   const hre = require("hardhat");
