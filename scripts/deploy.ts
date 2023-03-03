@@ -73,7 +73,6 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     const BaseCreditPoolImplContract = await deployer.deploy(BaseCreditPoolImpl);
     console.log(`BaseCreditPoolImpl address: ${BaseCreditPoolImplContract.address}`);
 
-
     const BaseCreditPool = await deployer.loadArtifact("TransparentUpgradeableProxy");
     const BaseCreditPoolContract = await deployer.deploy(BaseCreditPool, [BaseCreditPoolImplContract.address, BaseCreditPoolProxyAdminTimelockContract.address, []]);
     console.log(`BaseCreditPool address: ${BaseCreditPoolContract.address}`);

@@ -197,14 +197,14 @@ contract BaseCreditPool is BasePool, BaseCreditPoolStorage, ICredit {
      * The borrower can borrow and pay back as many times as they would like.
      * @param borrowAmount the amount to borrow
      */
-    function drawdown(uint256 borrowAmount) external virtual override {
+    function drawdown(uint256 borrowAmount, address receiver) external virtual override {
         address borrower = msg.sender;
-        // Open access to the borrower
+        // Open access to the borrower`
         if (borrowAmount == 0) revert Errors.zeroAmountProvided();
         BS.CreditRecord memory cr = _getCreditRecord(borrower);
 
         _checkDrawdownEligibility(borrower, cr, borrowAmount);
-        uint256 netAmountToBorrower = _drawdown(borrower, cr, borrowAmount);
+        uint256 netAmountToBorrower = _drawdown(borrower, cr, borrowAmount, receiver);
         emit DrawdownMade(borrower, borrowAmount, netAmountToBorrower);
     }
 
@@ -443,7 +443,8 @@ contract BaseCreditPool is BasePool, BaseCreditPoolStorage, ICredit {
     function _drawdown(
         address borrower,
         BS.CreditRecord memory cr,
-        uint256 borrowAmount
+        uint256 borrowAmount,
+        address receiver
     ) internal virtual returns (uint256) {
         if (cr.state == BS.CreditState.Approved) {
             // Flow for first drawdown
