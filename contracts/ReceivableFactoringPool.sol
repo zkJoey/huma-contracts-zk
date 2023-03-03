@@ -100,7 +100,7 @@ contract ReceivableFactoringPool is
      */
     function drawdown(
         uint256 /*borrowAmount*/
-    ) external virtual override {
+    ) external virtual {
         /// Intentional empty implementation to disable this function.
         revert Errors.drawdownFunctionUsedInsteadofDrawdownWithReceivable();
     }
@@ -112,7 +112,8 @@ contract ReceivableFactoringPool is
     function drawdownWithReceivable(
         uint256 borrowAmount,
         address receivableAsset,
-        uint256 receivableParam
+        uint256 receivableParam,
+        address receiver
     ) external virtual override {
         address borrower = msg.sender;
         BS.CreditRecord memory cr = _getCreditRecord(borrower);
@@ -124,7 +125,7 @@ contract ReceivableFactoringPool is
 
         _transferReceivableAsset(borrower, receivableAsset, receivableParam);
 
-        uint256 netAmountToBorrower = super._drawdown(borrower, cr, borrowAmount);
+        uint256 netAmountToBorrower = super._drawdown(borrower, cr, borrowAmount, receiver);
         emit DrawdownMadeWithReceivable(
             borrower,
             borrowAmount,

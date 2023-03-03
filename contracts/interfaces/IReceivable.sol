@@ -45,6 +45,7 @@ interface IReceivable {
     function drawdownWithReceivable(
         uint256 borrowAmount,
         address receivableAsset,
-        uint256 receivableParam
+        uint256 receivableParam,
+        address receiver
     ) external;
 }

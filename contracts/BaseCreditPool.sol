@@ -503,7 +503,7 @@ contract BaseCreditPool is BasePool, BaseCreditPoolStorage, ICredit {
         if (platformFees > 0) distributeIncome(platformFees);
 
         // Transfer funds to the _borrower
-        _underlyingToken.safeTransfer(borrower, netAmountToBorrower);
+        _underlyingToken.safeTransfer(receiver, netAmountToBorrower);
 
         return netAmountToBorrower;
     }

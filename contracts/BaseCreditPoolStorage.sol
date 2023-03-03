@@ -15,7 +15,3 @@ contract BaseCreditPoolStorage {
      */
     uint256[100] private __gap;
 }
-
-
-
-
