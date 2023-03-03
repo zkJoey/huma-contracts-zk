@@ -18,8 +18,7 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     const walletL2 = wallet.connect(provider);
     const deployer = new Deployer(hre, wallet);
 
-    
-
+    const humaPool = "0x55F587B3E66c60b4C33046F3652598F6fEF106a5";
 
 }
 
