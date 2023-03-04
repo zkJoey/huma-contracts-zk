@@ -19,7 +19,6 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     const deployer = new Deployer(hre, wallet);
 
     // List of signers 
-    const ea = provider.getSigner();
     // const treasury = provider.getSigner();
     // const eaService = provider.getSigner();
     // const proxyOwner = provider.getSigner();
@@ -27,14 +26,13 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
 
 
     //Signers 
-    // const ea = new Wallet(privateKey); 
-    // const ea_signer = provider.getSigner(ea.address);
-    // console.log(ea.address);
+    const ea = new Wallet(privateKey); 
+    const ea1 = ea.connect(provider);
     const treasury = new Wallet(privateKey);
-    console.log(treasury.address);
     const eaService = new Wallet(privateKey);
     const proxyOwner = new Wallet(privateKey);
     const pdsService  = new Wallet(privateKey);
+
 
 
     // usdc contract 
@@ -96,8 +94,8 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     await updateInitilizedContract("HumaConfig");
 
     console.log("eaNFT initializing");
-    const ea_address = await ea.getAddress();
-    await EANFTContract.connect(ea).mintNFT(ea_address);
+    // const ea_address = await ea.getAddress();
+    await EANFTContract.connect(ea1).mintNFT(ea.address);
     await updateInitilizedContract("EANFT");
     console.log("eaNFT initialized");
 
@@ -149,11 +147,13 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     console.log("Credit pool initialized");
 
     console.log("Enabling pool");
-    await pool.addApprovedLender(ea.address);
+    await pool.addApprovedLender(ea._address);
     await pool.addApprovedLender(treasury);
 
     const amountOwner = BN.from(20_000).mul(BN.from(10).pow(BN.from(decimals)));
     await usdc.mint(treasury, amountOwner);
+
+
 }   
 
 const hre = require("hardhat");
@@ -161,3 +161,4 @@ const hre = require("hardhat");
     console.error(error);
     process.exitCode = 1;
   });
+
