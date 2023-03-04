@@ -1,5 +1,6 @@
 const fs = require("fs");
 const {BigNumber: BN, ethers} = require("ethers");
+const DEPLOYED_PATH = "./deployment/";
 
 
 const readFileContent = async function (fileType = "deployed", network) {

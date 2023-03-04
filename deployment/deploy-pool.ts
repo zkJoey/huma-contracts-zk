@@ -19,7 +19,7 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     const deployer = new Deployer(hre, wallet);
 
     // List of signers 
-    // const ea = provider.getSigner();
+    const ea = provider.getSigner();
     // const treasury = provider.getSigner();
     // const eaService = provider.getSigner();
     // const proxyOwner = provider.getSigner();
@@ -27,8 +27,9 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
 
 
     //Signers 
-    const ea = new Wallet(privateKey); 
-    console.log(ea.address);
+    // const ea = new Wallet(privateKey); 
+    // const ea_signer = provider.getSigner(ea.address);
+    // console.log(ea.address);
     const treasury = new Wallet(privateKey);
     console.log(treasury.address);
     const eaService = new Wallet(privateKey);
@@ -95,7 +96,8 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     await updateInitilizedContract("HumaConfig");
 
     console.log("eaNFT initializing");
-    await EANFTContract.connect(ea.address).mintNFT(ea);
+    const ea_address = await ea.getAddress();
+    await EANFTContract.connect(ea).mintNFT(ea_address);
     await updateInitilizedContract("EANFT");
     console.log("eaNFT initialized");
 
