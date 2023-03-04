@@ -3,10 +3,7 @@ import * as ethers from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
 import dotenv from 'dotenv';
-import { SigningKey } from 'ethers/lib/utils';
-import {BigNumber} from "ethers";
 dotenv.config();
-import { Web3Provider } from "zksync-web3";
 
 
 const HUMA_OWNER_MULTI_SIG = '0xA071F1BC494507aeF4bc5038B8922641c320d486';
@@ -21,9 +18,9 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     const wallet = new Wallet(privateKey); 
     // console.log(wallet);
     const provider = new Provider("https://zksync2-testnet.zksync.dev");
-    const walletL2 = wallet.connect(provider);
     const deployer = new Deployer(hre, wallet);
     console.log(deployer);
+   
     
     const usdcArtifact = await deployer.loadArtifact("TestToken");
     const usdc = await deployer.deploy(usdcArtifact);
