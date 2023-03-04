@@ -8,32 +8,25 @@ import { ethers } from "ethers";
 import {updateInitilizedContract} from "./utils.js";
 const BN = require('bn.js');
 
-
-
-
 export default async function main(hre: HardhatRuntimeEnvironment) {
 
     const privateKey = process.env.PRIVATE_KEY ?? 'null';
     const wallet = new Wallet(privateKey); 
     const provider = new Provider("https://zksync2-testnet.zksync.dev");
     const deployer = new Deployer(hre, wallet);
-
-    // List of signers 
-    // const treasury = provider.getSigner();
-    // const eaService = provider.getSigner();
-    // const proxyOwner = provider.getSigner();
-    // const pdsService  = provider.getSigner();
-
-
     //Signers 
-    const ea = new Wallet(privateKey); 
-    const ea1 = ea.connect(provider);
-    const treasury = new Wallet(privateKey);
-    const eaService = new Wallet(privateKey);
-    const proxyOwner = new Wallet(privateKey);
-    const pdsService  = new Wallet(privateKey);
-
-
+    const treasury_wallet = new Wallet(privateKey); 
+    const treasury = treasury_wallet.connect(provider);
+    const lender_wallet = new Wallet(privateKey);
+    const lender = lender_wallet.connect(provider);
+    const ea_wallet = new Wallet(privateKey); 
+    const ea = ea_wallet.connect(provider);
+    const eaService_wallet = new Wallet(privateKey);
+    const eaService = eaService_wallet.connect(provider);
+    const proxyOwner_wallet = new Wallet(privateKey);
+    const proxyOwner = proxyOwner_wallet.connect(provider);
+    const pdsService_wallet = new Wallet(privateKey);
+    const pdsService = pdsService_wallet.connect(provider);
 
     // usdc contract 
     const usdcArtifact = await deployer.loadArtifact("TestToken");
@@ -95,7 +88,7 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
 
     console.log("eaNFT initializing");
     // const ea_address = await ea.getAddress();
-    await EANFTContract.connect(ea1).mintNFT(ea.address);
+    await EANFTContract.connect(ea).mintNFT(ea.address);
     await updateInitilizedContract("EANFT");
     console.log("eaNFT initialized");
 
@@ -106,10 +99,13 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
 
     console.log("HDT initializing");
     const hdt = BaseCreditHDTImplContract.attach(BaseCreditHDTContract.address)
-    await hdt.initialize("Credit HDT", "CHDT", 18, usdc.address);
-    await hdt.setPool(pool.address);
-    await updateInitilizedContract("BaseCreditHDT");
+    console.log("HHHHHH");
+    await hdt.initialize("Credit HDT", "CHDT", usdc.address);
     console.log("HDT initialized");
+    await hdt.setPool(pool.address);
+    console.log("HDT initialized again -----");
+    await updateInitilizedContract("BaseCreditHDT");
+    console.log("HDT initialized --------");
 
     console.log("Credit pool initializing");
     await BaseCreditPoolConfigContract.initialize("CreditLinePool", hdt.address, HumaConfigContract.address, BaseCreditPoolFeeManagerContract.address);
@@ -147,12 +143,26 @@ export default async function main(hre: HardhatRuntimeEnvironment) {
     console.log("Credit pool initialized");
 
     console.log("Enabling pool");
-    await pool.addApprovedLender(ea._address);
+    await pool.addApprovedLender(ea.address);
     await pool.addApprovedLender(treasury);
 
     const amountOwner = BN.from(20_000).mul(BN.from(10).pow(BN.from(decimals)));
     await usdc.mint(treasury, amountOwner);
+    await usdc.connect(treasury).approve(pool.address, amountOwner);
+    await pool.connect(treasury).makeInitialDeposit(amountOwner)
+    console.log("Enabling pool");
+    const amountEA = BN.from(10_000).mul(BN.from(10).pow(BN.from(decimals)));
+    await usdc.mint(ea.address, amountEA);
+    await usdc.connect(ea).approve(pool.address, amountEA);
+    await pool.connect(ea).makeInitialDeposit(amountEA);
+    await pool.enablePool();
+    console.log("Pool is enabled");
 
+    const amountLender = BN.from(500_000).mul(BN.from(10).pow(BN.from(decimals)));
+    await pool.addApprovedLender(lender.address);
+    await usdc.mint(lender.address, amountLender);
+    await usdc.connect(lender).approve(pool.address, amountLender);
+    
 
 }   
 
