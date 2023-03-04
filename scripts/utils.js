@@ -14,9 +14,7 @@ const readFileContent = async function (fileType = "deployed", network) {
 
 const getContractAddressFile = async function (fileType = "deployed", network) {
     if (!network) {
-        network = (await hre.ethers.provider.getNetwork()).name;
-        // console.log('network : ', network)
-        network = network == "unknown" ? "localhost" : network;
+        network = "zkTestnet";
     }
     const contractAddressFile = `${DEPLOYED_PATH}${network}-${fileType}-contracts.json`;
     // console.log("contractAddressFile: ", contractAddressFile);
